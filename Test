@@ -1,0 +1,143 @@
+local player = game.Players.LocalPlayer
+
+local newNPC = Instance.new("Model")
+newNPC.Name = "test_NPC"
+newNPC.Parent = workspace
+
+local head = Instance.new("Part")
+head.Name = "Head"
+head.Size = Vector3.new(20, 20, 20)
+head.Parent = newNPC
+head.BrickColor = BrickColor.new(Color3.new(255, 0, 0))
+head.Anchored = false
+head.CanCollide = true
+
+local torso = Instance.new("Part")
+torso.Name = "Torso"
+torso.Size = Vector3.new(8, 8, 8)
+torso.Parent = newNPC
+torso.BrickColor = BrickColor.new(Color3.new(255, 0, 0))
+torso.Anchored = false
+torso.CanCollide = true
+
+local leftArm = Instance.new("Part")
+leftArm.Name = "Left Arm"
+leftArm.Size = Vector3.new(20, 20, 20)
+leftArm.Parent = newNPC
+leftArm.BrickColor = BrickColor.new(Color3.new(255, 0, 0))
+leftArm.Anchored = false
+leftArm.CanCollide = true
+
+local rightArm = Instance.new("Part")
+rightArm.Name = "Right Arm"
+rightArm.Size = Vector3.new(20, 20, 20)
+rightArm.Parent = newNPC
+rightArm.BrickColor = BrickColor.new(Color3.new(255, 0, 0))
+rightArm.Anchored = false
+rightArm.CanCollide = true
+
+local leftLeg = Instance.new("Part")
+leftLeg.Name = "Left Leg"
+leftLeg.Size = Vector3.new(20, 20, 20)
+leftLeg.BrickColor = BrickColor.new(Color3.new(255, 0, 0))
+leftLeg.Parent = newNPC
+leftLeg.Anchored = false
+leftLeg.CanCollide = true
+
+local rightLeg = Instance.new("Part")
+rightLeg.Name = "Right Leg"
+rightLeg.Size = Vector3.new(20, 20, 20)
+rightLeg.BrickColor = BrickColor.new(Color3.new(255, 0, 0))
+rightLeg.Parent = newNPC
+rightLeg.Anchored = false
+rightLeg.CanCollide = true
+
+local headJoint = Instance.new("Motor6D")
+headJoint.Name = "Head Joint"
+headJoint.Part0 = torso
+headJoint.Part1 = head
+headJoint.Parent = newNPC
+
+local leftArmJoint = Instance.new("Motor6D")
+leftArmJoint.Name = "Left Arm Joint"
+leftArmJoint.Part0 = torso
+leftArmJoint.Part1 = leftArm
+leftArmJoint.Parent = newNPC
+
+local rightArmJoint = Instance.new("Motor6D")
+rightArmJoint.Name = "Right Arm Joint"
+rightArmJoint.Part0 = torso
+rightArmJoint.Part1 = rightArm
+rightArmJoint.Parent = newNPC
+
+local leftLegJoint = Instance.new("Motor6D")
+leftLegJoint.Name = "Left Leg Joint"
+leftLegJoint.Part0 = torso
+leftLegJoint.Part1 = leftLeg
+leftLegJoint.Parent = newNPC
+
+local rightLegJoint = Instance.new("Motor6D")
+rightLegJoint.Name = "Right Leg Joint"
+rightLegJoint.Part0 = torso
+rightLegJoint.Part1 = rightLeg
+rightLegJoint.Parent = newNPC
+
+local humanoid = Instance.new("Humanoid")
+humanoid.Name = "Humanoid"
+humanoid.Parent = newNPC
+
+newNPC.Name = "Model_Titan"
+humanoid.Health = math.huge
+humanoid.WalkSpeed = 10
+humanoid.JumpPower = 100
+humanoid.AutoJumpEnabled = true
+humanoid.UseJumpPower = true
+
+newNPC.PrimaryPart = torso
+
+newNPC:SetPrimaryPartCFrame(player.Character.PrimaryPart.CFrame)
+
+local function wander()
+    local destination = Vector3.new(math.random(-10, 10), 0, math.random(-10, 10))
+    humanoid:MoveTo(destination)
+    humanoid.MoveToFinished:Wait()
+end
+
+local function followPlayer()
+    humanoid:MoveTo(player.Character.PrimaryPart.Position)
+    humanoid.MoveToFinished:Wait()
+end
+
+local function checkPlayerDistance()
+    if (player.Character.PrimaryPart.Position - torso.Position).Magnitude < 40 then
+        followPlayer()
+    else
+        wander()
+    end
+end
+
+local function jumpRandomly()
+    if math.random(1, 10) == 1 then
+        humanoid.Jump = true
+    end
+end
+
+local function pushPlayer(hit)
+    if hit.Parent == player.Character then
+        local pushForce = 5000
+        local pushDirection = (hit.Position - torso.Position).Unit
+        player.Character:ApplyImpulse(pushDirection * pushForce)
+    end
+end
+
+while true do
+    checkPlayerDistance()
+    task.wait()
+end
+
+head.Touched:Connect(pushPlayer)
+torso.Touched:Connect(pushPlayer)
+leftArm.Touched:Connect(pushPlayer)
+rightArm.Touched:Connect(pushPlayer)
+leftLeg.Touched:Connect(pushPlayer)
+rightLeg.Touched:Connect(pushPlayer)
